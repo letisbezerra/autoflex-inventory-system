@@ -10,22 +10,18 @@ public class StockService {
 
     @Transactional
     public void processProductSale(Product product, int quantitySold) {
-        // Acessamos 'compositions' direto, sem o 'get'
-        if (product.compositions == null || product.compositions.isEmpty()) {
-            throw new RuntimeException("Product has no composition defined.");
-        }
+        if (product.compositions == null) return;
 
         for (var comp : product.compositions) {
             RawMaterial rm = comp.rawMaterial;
             double totalNeeded = comp.quantityNeeded * quantitySold;
 
             if (rm.quantity < totalNeeded) {
-                throw new RuntimeException("Insufficient stock for: " + rm.name);
+                throw new RuntimeException("Estoque insuficiente de: " + rm.name);
             }
 
-            // Atualiza o valor e persiste
             rm.quantity -= totalNeeded;
-            rm.persist();
+            rm.persist(); 
         }
     }
 }

@@ -17,6 +17,17 @@ public class ProductController {
     @Inject
     StockService stockService; 
 
+    @POST
+    @Transactional
+    public Response create(Product product) {
+        if (product.name == null || product.price == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("Name and Price are required").build();
+        }
+        product.persist();
+        return Response.status(Response.Status.CREATED).entity(product).build();
+    }
+
     @GET
     public List<Product> getAll() {
         return Product.listAll();
