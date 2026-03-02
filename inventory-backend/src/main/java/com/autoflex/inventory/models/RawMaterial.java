@@ -7,5 +7,5 @@ import jakarta.persistence.Entity;
 @Entity
 public class RawMaterial extends PanacheEntity {
     public String name;
-    public Double stockQuantity; // RNF007: Quantidade em estoque em inglês
+    public double quantity; 
 }

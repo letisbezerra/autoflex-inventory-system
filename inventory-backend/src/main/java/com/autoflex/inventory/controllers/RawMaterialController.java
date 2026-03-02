@@ -9,7 +9,7 @@ import java.util.List;
 @Path("/raw-materials")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class RawMaterialResource {
+public class RawMaterialController {
 
     @GET
     public List<RawMaterial> getAll() {
