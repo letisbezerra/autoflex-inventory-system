@@ -8,7 +8,7 @@ import jakarta.persistence.Column;
 public class RawMaterial extends PanacheEntity {
 
     @Column(nullable = false, unique = true)
-    public String code; // Código de identificação manual
+    public String code; 
 
     @Column(nullable = false)
     public String name;

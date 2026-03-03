@@ -28,23 +28,27 @@ public class ProductionService {
     }
 
     public List<SuggestionDTO> getProductionSuggestion() {
+        // Busca produtos ordenados pelo maior preço (prioridade de lucro)
         List<Product> products = Product.find("order by price desc").list();
         
         List<RawMaterial> allMaterials = RawMaterial.listAll();
         Map<Long, Double> virtualStock = new HashMap<>();
+        
         for (RawMaterial rm : allMaterials) {
-            virtualStock.put(rm.id, rm.quantity);
+            virtualStock.put(rm.id, rm.quantity != null ? rm.quantity : 0.0);
         }
 
         List<SuggestionDTO> suggestions = new ArrayList<>();
 
         for (Product product : products) {
+            // Se o produto não tiver composição, ele não pode ser "produzido" virtualmente aqui
             if (product.compositions == null || product.compositions.isEmpty()) continue;
 
             int count = 0;
             boolean canProduceMore = true;
 
             while (canProduceMore) {
+                // Checa se há estoque para todos os materiais da receita
                 for (ProductComposition comp : product.compositions) {
                     if (comp.quantityNeeded == null || comp.quantityNeeded <= 0) {
                         canProduceMore = false;
@@ -58,6 +62,7 @@ public class ProductionService {
                     }
                 }
 
+                // Se passou no teste, "consome" o estoque virtual e aumenta o contador
                 if (canProduceMore) {
                     for (ProductComposition comp : product.compositions) {
                         double currentStock = virtualStock.get(comp.rawMaterial.id);
@@ -66,7 +71,7 @@ public class ProductionService {
                     count++;
                 }
                 
-                if (count > 10000) break; 
+                if (count > 5000) break; // Trava de segurança reduzida para performance
             }
 
             if (count > 0) {

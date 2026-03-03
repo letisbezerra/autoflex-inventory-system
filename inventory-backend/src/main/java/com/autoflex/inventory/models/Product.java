@@ -1,27 +1,26 @@
 package com.autoflex.inventory.models;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Column;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-public class Product extends PanacheEntity {
-    
-    @Column(nullable = false, unique = true)
-    public String code; // Código de identificação manual
+public class Product extends PanacheEntityBase {
 
-    @Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore 
+    public Long id;
+
+    public String code;
     public String name;
-
-    @Column(nullable = false)
     public BigDecimal price;
-
-    public Double quantity; // Quantidade em estoque do produto final
+    
+    public Double quantity = 0.0;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+    @JsonIgnore 
     public List<ProductComposition> compositions;
 }

@@ -11,15 +11,15 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
-// Importante para a documentação profissional
 import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "Products", description = "Endpoints for managing products and sales")
+@Tag(name = "1. Products", description = "Product management using business codes")
 public class ProductController {
 
     @Inject
@@ -27,13 +27,18 @@ public class ProductController {
 
     @POST
     @Transactional
-    @Operation(summary = "Create product", description = "Registers a new product in the catalog")
+    @Operation(summary = "Create product")
     public Response create(ProductRequest request) {
         if (request.code == null || request.name == null || request.price == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                            .entity(Map.of("error", "Code, Name and Price are required")).build();
         }
         
+        if (Product.find("code", request.code).firstResult() != null) {
+            return Response.status(Response.Status.CONFLICT)
+                           .entity(Map.of("error", "Product code already exists")).build();
+        }
+
         Product product = new Product();
         product.code = request.code;
         product.name = request.name;
@@ -50,46 +55,55 @@ public class ProductController {
     }
 
     @GET
-    @Path("/{id}")
-    @Operation(summary = "Get product by ID")
-    public Response getById(@PathParam("id") Long id) {
-        Product product = Product.findById(id);
+    @Path("/{code}")
+    @Operation(summary = "Get product by Code")
+    public Response getByCode(
+        @Parameter(description = "Business code", required = true)
+        @PathParam("code") String code) {
+        
+        Product product = Product.find("code", code).firstResult();
         if (product == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity(Map.of("error", "Product not found")).build();
         }
         return Response.ok(product).build();
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/{code}") 
     @Transactional
     @Operation(summary = "Update product")
-    public Response update(@PathParam("id") Long id, ProductRequest request) {
-        Product entity = Product.findById(id);
+    public Response update(@PathParam("code") String code, ProductRequest request) {
+        Product entity = Product.find("code", code).firstResult();
         if (entity == null) {
-            return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", "Product not found")).build();
+            return Response.status(Response.Status.NOT_FOUND)
+                           .entity(Map.of("error", "Product not found")).build();
         }
-        entity.code = request.code;
+
         entity.name = request.name;
         entity.price = request.price;
         return Response.ok(entity).build();
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/{code}")
     @Transactional
     @Operation(summary = "Delete product")
-    public Response delete(@PathParam("id") Long id) {
-        boolean deleted = Product.deleteById(id);
-        return deleted ? Response.noContent().build() : Response.status(Response.Status.NOT_FOUND).build();
+    public Response delete(@PathParam("code") String code) {
+        Product entity = Product.find("code", code).firstResult();
+        if (entity == null) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+        entity.delete();
+        return Response.noContent().build();
     }
 
     @POST
-    @Path("/{id}/sell")
+    @Path("/{code}/sell")
     @Transactional 
-    @Operation(summary = "Register sale", description = "Decreases raw material stock based on product composition")
-    public Response sellProduct(@PathParam("id") Long id, @QueryParam("quantity") int quantity) {
-        Product product = Product.findById(id);
+    @Operation(summary = "Register sale")
+    public Response sellProduct(@PathParam("code") String code, @QueryParam("quantity") int quantity) {
+        Product product = Product.find("code", code).firstResult();
         if (product == null) {
             return Response.status(Response.Status.NOT_FOUND).entity(Map.of("error", "Product not found")).build();
         }
@@ -101,10 +115,16 @@ public class ProductController {
         }
     }
 
-    @Schema(name = "Product Input", description = "Data required to create or update a product")
+    // AQUI ESTÁ A CLASSE QUE ESTAVA DANDO ERRO
+    @Schema(name = "ProductRequest")
     public static class ProductRequest {
+        @Schema(required = true, examples = {"PRD-001"})
         public String code;
+        
+        @Schema(required = true, examples = {"Professional Camera"})
         public String name;
+        
+        @Schema(required = true, examples = {"1500.00"})
         public BigDecimal price;
     }
 }

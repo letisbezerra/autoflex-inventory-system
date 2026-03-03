@@ -15,22 +15,25 @@ public class StockService {
             throw new RuntimeException("Quantity must be greater than zero.");
         }
 
-        if (product.compositions == null || product.compositions.isEmpty()) {
-            throw new RuntimeException("This product has no defined raw materials and cannot be processed.");
-        }
+        if (product.compositions != null && !product.compositions.isEmpty()) {
+            for (ProductComposition comp : product.compositions) {
+                RawMaterial rm = comp.rawMaterial;
+                
+                double totalNeeded = comp.quantityNeeded * quantitySold;
 
-        for (ProductComposition comp : product.compositions) {
-            RawMaterial rm = comp.rawMaterial;
-            
-            double totalNeeded = comp.quantityNeeded * quantitySold;
+                if (rm.quantity < totalNeeded) {
+                    throw new RuntimeException("Insufficient stock for material: " + rm.name + 
+                        " (Needed: " + totalNeeded + ", Available: " + rm.quantity + ")");
+                }
 
-            if (rm.quantity < totalNeeded) {
-                throw new RuntimeException("Insufficient stock for material: " + rm.name + 
-                    " (Needed: " + totalNeeded + ", Available: " + rm.quantity + ")");
+                rm.quantity -= totalNeeded;
+                rm.persist(); 
             }
-
-            rm.quantity -= totalNeeded;
-            rm.persist(); 
         }
+
+        double currentQty = product.quantity != null ? product.quantity : 0.0;
+        product.quantity = currentQty - quantitySold;
+        
+        product.persist();
     }
 }
