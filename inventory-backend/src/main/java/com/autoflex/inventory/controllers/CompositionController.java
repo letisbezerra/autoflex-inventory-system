@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import java.util.Map;
 
 @Path("/compositions")
 @Produces(MediaType.APPLICATION_JSON)
@@ -16,12 +17,25 @@ public class CompositionController {
     @POST
     @Transactional
     public Response associate(CompositionRequest request) {
+        // 1. Validação de campos obrigatórios
+        if (request.productId == null || request.rawMaterialId == null || request.quantityNeeded == null || request.quantityNeeded <= 0) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity(Map.of("error", "All fields are required and quantity must be greater than zero")).build();
+        }
+
         Product product = Product.findById(request.productId);
         RawMaterial material = RawMaterial.findById(request.rawMaterialId);
 
         if (product == null || material == null) {
             return Response.status(Response.Status.NOT_FOUND)
-                           .entity("Product or Material not found").build();
+                           .entity(Map.of("error", "Product or Material not found")).build();
+        }
+
+        // 2. Trava de segurança: Evitar duplicar a mesma matéria-prima no mesmo produto
+        boolean alreadyExists = ProductComposition.find("product = ?1 and rawMaterial = ?2", product, material).count() > 0;
+        if (alreadyExists) {
+            return Response.status(Response.Status.CONFLICT)
+                           .entity(Map.of("error", "This material is already associated with this product")).build();
         }
 
         ProductComposition composition = new ProductComposition();
@@ -33,7 +47,6 @@ public class CompositionController {
         return Response.status(Response.Status.CREATED).entity(composition).build();
     }
 
-    // Esta classe cria o Schema limpo que você viu no Swagger
     public static class CompositionRequest {
         public Long productId;
         public Long rawMaterialId;

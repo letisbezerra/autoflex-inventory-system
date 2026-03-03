@@ -5,7 +5,6 @@ import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-
 import java.util.List;
 
 @Path("/raw-materials")
@@ -20,9 +19,13 @@ public class RawMaterialController {
 
     @POST
     @Transactional
-    public RawMaterial create(RawMaterial material) {
+    public Response create(RawMaterial material) {
+        if (material.code == null || material.name == null || material.quantity == null) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("Code, Name and Quantity are required").build();
+        }
         material.persist();
-        return material;
+        return Response.status(Response.Status.CREATED).entity(material).build();
     }
 
     @PUT
@@ -33,6 +36,7 @@ public class RawMaterialController {
         if (entity == null) {
             return Response.status(Response.Status.NOT_FOUND).entity("Material not found").build();
         }
+        entity.code = material.code; // Atualizando o código
         entity.name = material.name;
         entity.quantity = material.quantity;
         return Response.ok(entity).build();
@@ -44,5 +48,4 @@ public class RawMaterialController {
     public void delete(@PathParam("id") Long id) {
         RawMaterial.deleteById(id);
     }
-    
 }

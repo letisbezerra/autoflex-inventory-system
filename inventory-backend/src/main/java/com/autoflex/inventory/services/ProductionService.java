@@ -1,6 +1,7 @@
 package com.autoflex.inventory.services;
 
 import com.autoflex.inventory.models.Product;
+import com.autoflex.inventory.models.ProductComposition;
 import com.autoflex.inventory.models.RawMaterial;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
@@ -22,11 +23,12 @@ public class ProductionService {
             this.productName = name;
             this.quantityPossible = qty;
             this.unitPrice = price;
-            this.totalValue = price.multiply(BigDecimal.valueOf(qty));
+            this.totalValue = (price != null) ? price.multiply(BigDecimal.valueOf(qty)) : BigDecimal.ZERO;
         }
     }
 
     public List<SuggestionDTO> getProductionSuggestion() {
+        // Ordenação por preço decrescente conforme RF004
         List<Product> products = Product.find("order by price desc").list();
         
         List<RawMaterial> allMaterials = RawMaterial.listAll();
@@ -38,14 +40,21 @@ public class ProductionService {
         List<SuggestionDTO> suggestions = new ArrayList<>();
 
         for (Product product : products) {
+            // Se o produto não tem composição, ele não pode ser produzido
             if (product.compositions == null || product.compositions.isEmpty()) continue;
 
             int count = 0;
             boolean canProduceMore = true;
 
             while (canProduceMore) {
-                for (var comp : product.compositions) {
-                    double currentStock = virtualStock.get(comp.rawMaterial.id);
+                for (ProductComposition comp : product.compositions) {
+                    // Proteção contra divisões por zero ou dados inconsistentes
+                    if (comp.quantityNeeded == null || comp.quantityNeeded <= 0) {
+                        canProduceMore = false;
+                        break;
+                    }
+
+                    double currentStock = virtualStock.getOrDefault(comp.rawMaterial.id, 0.0);
                     if (currentStock < comp.quantityNeeded) {
                         canProduceMore = false;
                         break;
@@ -53,12 +62,15 @@ public class ProductionService {
                 }
 
                 if (canProduceMore) {
-                    for (var comp : product.compositions) {
+                    for (ProductComposition comp : product.compositions) {
                         double currentStock = virtualStock.get(comp.rawMaterial.id);
                         virtualStock.put(comp.rawMaterial.id, currentStock - comp.quantityNeeded);
                     }
                     count++;
                 }
+                
+                // Trava de segurança para evitar loops infinitos em lógica complexa
+                if (count > 10000) break; 
             }
 
             if (count > 0) {

@@ -30,7 +30,13 @@ public class ProductionController {
         Map<String, Object> response = new HashMap<>();
         response.put("suggestions", suggestions);
         response.put("grandTotalProductionValue", grandTotal);
-        response.put("message", "Priority based on highest product value");
+        
+        // Mensagem dinâmica para o Front-end
+        if (suggestions.isEmpty()) {
+            response.put("message", "Insufficient raw materials to produce any products.");
+        } else {
+            response.put("message", "Priority based on highest product value.");
+        }
 
         return response;
     }
