@@ -5,7 +5,7 @@ This is the backend module for the Autoflex Inventory Management System. Built w
 ---
 
 ## 🚀 Project Status
-**Backend Fully Operational.** All functional requirements for product management, stock control, and production optimization are implemented and documented.
+**Backend Fully Operational.** All functional requirements for product management, stock control, and production optimization are implemented, including full CRUD operations and business logic.
 
 ---
 
@@ -14,6 +14,7 @@ This is the backend module for the Autoflex Inventory Management System. Built w
 * **Quarkus**: The Supersonic Subatomic Java Framework (RNF005).
 * **PostgreSQL**: Relational database (RNF004).
 * **Hibernate Panache**: Active Record pattern for simplified persistence.
+* **Jackson**: Custom JSON serialization handling circular references.
 * **CORS**: Fully configured for secure communication with the React frontend.
 
 ---
@@ -21,10 +22,11 @@ This is the backend module for the Autoflex Inventory Management System. Built w
 ## 📋 Implemented Requirements
 
 ### ✅ Functional Requirements (RFs)
-- **RF001**: Full Product CRUD (Name, Price).
-- **RF002**: Full Raw Material CRUD (Stock/Inventory).
-- **RF003**: Product-Material Association (Recipe/Composition definition).
-- **RF004**: **Production Suggestion Engine**: Intelligent algorithm prioritizing **higher-value** products based on available stock.
+- **RF001 (Product CRUD)**: Full Create, Read, Update, and Delete operations for products.
+- **RF002 (Raw Material CRUD)**: Full Create, Read, Update, and Delete operations for materials/inventory.
+- **RF003 (Association)**: Dedicated endpoints to link raw materials to products with specific quantities.
+- **RF004 (Production Suggestion)**: Intelligent algorithm prioritizing **higher-value** products based on available stock.
+- **Sales Logic**: Implementation of a `/sell` endpoint that validates and deducts stock automatically.
 
 ### ✅ Non-Functional Requirements (RNFs)
 - **RNF002**: Decoupled API architecture.
@@ -32,10 +34,16 @@ This is the backend module for the Autoflex Inventory Management System. Built w
 
 ---
 
-## 📝 Development Highlights
-1. **Intelligent Production Logic**: The system calculates stock bottlenecks and suggests maximum production capacity, sorted by product price (descending).
-2. **Data Integrity**: Used `@JsonIgnore` to handle bi-directional relationships and prevent circular JSON references.
-3. **API Documentation**: Integrated SmallRye OpenAPI (Swagger) for real-time endpoint testing.
+## 📝 Technical Implementation Details
+
+1. **Full CRUD Support**: 
+   - `GET`: Retrieve all items or specific IDs.
+   - `POST`: Create new entries.
+   - `PUT`: Update existing records via ID.
+   - `DELETE`: Remove records with transactional integrity.
+2. **Intelligent Production Engine**: Logic that sorts products by price (DESC), checks material availability, and calculates the maximum possible production volume.
+3. **Circular Reference Fix**: Implemented `@JsonIgnore` on the `ProductComposition` model to allow seamless JSON rendering in the frontend.
+4. **CORS Policy**: Enabled for `http://localhost:3000` and `http://localhost:5173` to support Vite/React development.
 
 ---
 
@@ -52,13 +60,16 @@ cd inventory-backend
 
 # Run in Dev Mode
 ./mvnw quarkus:dev
-🔗 Main Endpoints (Swagger UI)
-Once the application is running, access the interactive documentation:
+🔗 API Reference (Swagger UI)
+Once the application is running, access the interactive documentation to test all POST, GET, PUT, and DELETE methods:
 
 👉 http://localhost:8080/q/swagger-ui/
 
-GET /production/suggest: Production optimization logic.
+Key Endpoints:
+PUT /products/{id}: Update product details.
 
-POST /compositions: Link raw materials to products.
+DELETE /raw-materials/{id}: Remove material from inventory.
 
-GET /products: List all registered products and their compositions.
+POST /compositions: Define the "recipe" for a product.
+
+GET /production/suggest: View the production dashboard.
