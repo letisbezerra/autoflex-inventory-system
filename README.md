@@ -1,51 +1,64 @@
 # 🛠️ Autoflex Inventory System - Backend
 
-Este é o módulo de backend do sistema de gestão de estoque Autoflex. Desenvolvido com **Quarkus**, o projeto foca em alta performance e código limpo.
+This is the backend module for the Autoflex Inventory Management System. Built with **Quarkus**, this project focuses on high performance, clean architecture, and native cloud integration.
 
 ---
 
-## 🚀 Status do Projeto
-**Backend 100% Operacional.** Todas as funcionalidades de gestão de produtos, controle de insumos e otimização de produção foram implementadas.
+## 🚀 Project Status
+**Backend Fully Operational.** All functional requirements for product management, stock control, and production optimization are implemented and documented.
 
 ---
 
-## 🧠 Arquitetura e Tecnologias
-* **Java 21**: Versão LTS mais recente.
-* **Quarkus**: Framework Java focado em cloud-native (RNF005).
-* **PostgreSQL**: Banco de dados relacional (RNF004).
-* **Hibernate Panache**: Persistência simplificada.
-* **CORS**: Configurado para integração com o frontend React.
+## 🧠 Architecture & Technologies
+* **Java 21**: Latest LTS version.
+* **Quarkus**: The Supersonic Subatomic Java Framework (RNF005).
+* **PostgreSQL**: Relational database (RNF004).
+* **Hibernate Panache**: Active Record pattern for simplified persistence.
+* **CORS**: Fully configured for secure communication with the React frontend.
 
 ---
 
-## 📋 Requisitos Implementados
+## 📋 Implemented Requirements
 
-### ✅ Requisitos Funcionais (RFs)
-- **RF001**: CRUD completo de Produtos.
-- **RF002**: CRUD completo de Matérias-Primas.
-- **RF003**: Associação Produto-Material (Composição).
-- **RF004**: **Motor de Sugestão de Produção** (Prioridade por maior valor).
+### ✅ Functional Requirements (RFs)
+- **RF001**: Full Product CRUD (Name, Price).
+- **RF002**: Full Raw Material CRUD (Stock/Inventory).
+- **RF003**: Product-Material Association (Recipe/Composition definition).
+- **RF004**: **Production Suggestion Engine**: Intelligent algorithm prioritizing **higher-value** products based on available stock.
 
-### ✅ Requisitos Não Funcionais (RNFs)
-- **RNF002**: Arquitetura desacoplada (API).
-- **RNF007**: Código e documentação em **Inglês**.
+### ✅ Non-Functional Requirements (RNFs)
+- **RNF002**: Decoupled API architecture.
+- **RNF007**: **Full English implementation** for code, database schemas, and documentation.
 
 ---
 
-## ⚙️ Como Executar
+## 📝 Development Highlights
+1. **Intelligent Production Logic**: The system calculates stock bottlenecks and suggests maximum production capacity, sorted by product price (descending).
+2. **Data Integrity**: Used `@JsonIgnore` to handle bi-directional relationships and prevent circular JSON references.
+3. **API Documentation**: Integrated SmallRye OpenAPI (Swagger) for real-time endpoint testing.
 
-### 1. Pré-requisitos
-* Docker Desktop (Rodando).
-* Java 21+.
+---
 
-### 2. Instalação e Execução
+## ⚙️ How to Run
+
+### 1. Prerequisites
+* Docker Desktop (Running).
+* Java 21 or higher.
+
+### 2. Execution
 ```bash
-# Acessar a pasta
+# Navigate to the folder
 cd inventory-backend
 
-# Iniciar em modo dev
+# Run in Dev Mode
 ./mvnw quarkus:dev
-🔗 Endpoints Principais (Swagger)
-Com a aplicação rodando, acesse a interface interativa para testes:
+🔗 Main Endpoints (Swagger UI)
+Once the application is running, access the interactive documentation:
 
 👉 http://localhost:8080/q/swagger-ui/
+
+GET /production/suggest: Production optimization logic.
+
+POST /compositions: Link raw materials to products.
+
+GET /products: List all registered products and their compositions.
