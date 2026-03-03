@@ -1,63 +1,51 @@
-🛠️ Autoflex Inventory System - Backend
-This is the backend module for the Autoflex Inventory Management System. Built with Quarkus, this project focuses on high performance and clean architecture.
+# 🛠️ Autoflex Inventory System - Backend
 
-🚀 Project Status
-Backend Fully Operational. All functional requirements for product management, stock control, and production optimization have been implemented.
+Este é o módulo de backend do sistema de gestão de estoque Autoflex. Desenvolvido com **Quarkus**, o projeto foca em alta performance e código limpo.
 
-🧠 Architecture & Technologies
-Java 21: Latest LTS version.
+---
 
-Quarkus: The Supersonic Subatomic Java Framework. (RNF005)
+## 🚀 Status do Projeto
+**Backend 100% Operacional.** Todas as funcionalidades de gestão de produtos, controle de insumos e otimização de produção foram implementadas.
 
-PostgreSQL: Relational database. (RNF004)
+---
 
-Hibernate Panache: Active Record pattern for simplified persistence.
+## 🧠 Arquitetura e Tecnologias
+* **Java 21**: Versão LTS mais recente.
+* **Quarkus**: Framework Java focado em cloud-native (RNF005).
+* **PostgreSQL**: Banco de dados relacional (RNF004).
+* **Hibernate Panache**: Persistência simplificada.
+* **CORS**: Configurado para integração com o frontend React.
 
-Jackson: Efficient JSON serialization/deserialization with circular reference handling.
+---
 
-CORS Enabled: Configured to allow integration with React frontend.
+## 📋 Requisitos Implementados
 
-📋 Implemented Requirements
-[x] RF001: Full Product CRUD.
+### ✅ Requisitos Funcionais (RFs)
+- **RF001**: CRUD completo de Produtos.
+- **RF002**: CRUD completo de Matérias-Primas.
+- **RF003**: Associação Produto-Material (Composição).
+- **RF004**: **Motor de Sugestão de Produção** (Prioridade por maior valor).
 
-[x] RF002: Full Raw Material CRUD (Inventory tracking).
+### ✅ Requisitos Não Funcionais (RNFs)
+- **RNF002**: Arquitetura desacoplada (API).
+- **RNF007**: Código e documentação em **Inglês**.
 
-[x] RF003: Product-Material Association (Define recipes/compositions).
+---
 
-[x] RF004: Production Suggestion Engine: Intelligent algorithm that suggests production quantities based on current stock, prioritizing products with higher market value.
+## ⚙️ Como Executar
 
-[x] RNF007: Full English implementation for code, database schemas, and API documentation.
+### 1. Pré-requisitos
+* Docker Desktop (Rodando).
+* Java 21+.
 
-📝 Development Highlights
-Intelligent Production Logic: Implemented a service that simulates production by calculating the "bottleneck" material for each product, sorted by price in descending order.
-
-Database Integrity: Established robust relationships (OneToMany/ManyToOne) to ensure data consistency between products and materials.
-
-API Documentation: Integrated Swagger UI for real-time testing and schema validation.
-
-CORS Configuration: Prepared the backend for secure communication with the React application.
-
-⚙️ How to Run
-Prerequisites
-Docker Desktop (Running).
-
-Java 21+.
-
-Execution
-Clone the repository and navigate to the folder:
-
-Bash
+### 2. Instalação e Execução
+```bash
+# Acessar a pasta
 cd inventory-backend
-Start in Dev Mode:
 
-Bash
+# Iniciar em modo dev
 ./mvnw quarkus:dev
-🔗 Main Endpoints (Swagger)
-Access the interactive documentation to test the API:
+🔗 Endpoints Principais (Swagger)
+Com a aplicação rodando, acesse a interface interativa para testes:
+
 👉 http://localhost:8080/q/swagger-ui/
-
-GET /production/suggest: The core logic for production optimization.
-
-POST /compositions: Link raw materials to products.
-
-POST /products/{id}/sell: Process sales and automatically deduct stock.
