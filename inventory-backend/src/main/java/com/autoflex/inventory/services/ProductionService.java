@@ -28,7 +28,6 @@ public class ProductionService {
     }
 
     public List<SuggestionDTO> getProductionSuggestion() {
-        // Ordenação por preço decrescente conforme RF004
         List<Product> products = Product.find("order by price desc").list();
         
         List<RawMaterial> allMaterials = RawMaterial.listAll();
@@ -40,7 +39,6 @@ public class ProductionService {
         List<SuggestionDTO> suggestions = new ArrayList<>();
 
         for (Product product : products) {
-            // Se o produto não tem composição, ele não pode ser produzido
             if (product.compositions == null || product.compositions.isEmpty()) continue;
 
             int count = 0;
@@ -48,7 +46,6 @@ public class ProductionService {
 
             while (canProduceMore) {
                 for (ProductComposition comp : product.compositions) {
-                    // Proteção contra divisões por zero ou dados inconsistentes
                     if (comp.quantityNeeded == null || comp.quantityNeeded <= 0) {
                         canProduceMore = false;
                         break;
@@ -69,7 +66,6 @@ public class ProductionService {
                     count++;
                 }
                 
-                // Trava de segurança para evitar loops infinitos em lógica complexa
                 if (count > 10000) break; 
             }
 

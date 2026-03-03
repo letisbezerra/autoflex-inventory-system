@@ -11,17 +11,23 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
+// Importante para a documentação profissional
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Products", description = "Endpoints for managing products and sales")
 public class ProductController {
 
     @Inject
     StockService stockService;
 
-    // 1. CREATE - Agora usando o ProductRequest para limpar o Swagger
     @POST
     @Transactional
+    @Operation(summary = "Create product", description = "Registers a new product in the catalog")
     public Response create(ProductRequest request) {
         if (request.code == null || request.name == null || request.price == null) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -38,12 +44,14 @@ public class ProductController {
     }
 
     @GET
+    @Operation(summary = "List all products")
     public List<Product> getAll() {
         return Product.listAll();
     }
 
     @GET
     @Path("/{id}")
+    @Operation(summary = "Get product by ID")
     public Response getById(@PathParam("id") Long id) {
         Product product = Product.findById(id);
         if (product == null) {
@@ -55,6 +63,7 @@ public class ProductController {
     @PUT
     @Path("/{id}")
     @Transactional
+    @Operation(summary = "Update product")
     public Response update(@PathParam("id") Long id, ProductRequest request) {
         Product entity = Product.findById(id);
         if (entity == null) {
@@ -69,6 +78,7 @@ public class ProductController {
     @DELETE
     @Path("/{id}")
     @Transactional
+    @Operation(summary = "Delete product")
     public Response delete(@PathParam("id") Long id) {
         boolean deleted = Product.deleteById(id);
         return deleted ? Response.noContent().build() : Response.status(Response.Status.NOT_FOUND).build();
@@ -77,6 +87,7 @@ public class ProductController {
     @POST
     @Path("/{id}/sell")
     @Transactional 
+    @Operation(summary = "Register sale", description = "Decreases raw material stock based on product composition")
     public Response sellProduct(@PathParam("id") Long id, @QueryParam("quantity") int quantity) {
         Product product = Product.findById(id);
         if (product == null) {
@@ -90,7 +101,7 @@ public class ProductController {
         }
     }
 
-    // Classe DTO para limpar a interface do Swagger e facilitar o Front-end
+    @Schema(name = "Product Input", description = "Data required to create or update a product")
     public static class ProductRequest {
         public String code;
         public String name;

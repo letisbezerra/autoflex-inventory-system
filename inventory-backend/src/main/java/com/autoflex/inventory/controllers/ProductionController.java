@@ -10,9 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+// Novos imports para o Swagger
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 @Path("/production")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "3. Production Planning", description = "Smart dashboard for production suggestions")
 public class ProductionController {
 
     @Inject
@@ -20,6 +28,15 @@ public class ProductionController {
 
     @GET
     @Path("/suggest")
+    @Operation(summary = "Get production dashboard", description = "Returns a prioritized list of products to produce based on current stock.")
+    @APIResponse(
+        responseCode = "200",
+        description = "Production suggestion data",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(name = "Production Dashboard", description = "Financial and production summary")
+        )
+    )
     public Map<String, Object> getProductionDashboard() {
         List<SuggestionDTO> suggestions = productionService.getProductionSuggestion();
 
@@ -31,7 +48,6 @@ public class ProductionController {
         response.put("suggestions", suggestions);
         response.put("grandTotalProductionValue", grandTotal);
         
-        // Mensagem dinâmica para o Front-end
         if (suggestions.isEmpty()) {
             response.put("message", "Insufficient raw materials to produce any products.");
         } else {

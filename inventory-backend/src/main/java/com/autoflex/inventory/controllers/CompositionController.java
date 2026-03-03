@@ -9,15 +9,18 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.Map;
 
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
 @Path("/compositions")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Tag(name = "Composition", description = "Endpoints for managing product compositions")
 public class CompositionController {
 
     @POST
     @Transactional
     public Response associate(CompositionRequest request) {
-        // 1. Validação de campos obrigatórios
         if (request.productId == null || request.rawMaterialId == null || request.quantityNeeded == null || request.quantityNeeded <= 0) {
             return Response.status(Response.Status.BAD_REQUEST)
                            .entity(Map.of("error", "All fields are required and quantity must be greater than zero")).build();
@@ -31,7 +34,6 @@ public class CompositionController {
                            .entity(Map.of("error", "Product or Material not found")).build();
         }
 
-        // 2. Trava de segurança: Evitar duplicar a mesma matéria-prima no mesmo produto
         boolean alreadyExists = ProductComposition.find("product = ?1 and rawMaterial = ?2", product, material).count() > 0;
         if (alreadyExists) {
             return Response.status(Response.Status.CONFLICT)
@@ -47,6 +49,7 @@ public class CompositionController {
         return Response.status(Response.Status.CREATED).entity(composition).build();
     }
 
+    @Schema(name = "Composition Request", description = "Request body for associating a raw material with a product")
     public static class CompositionRequest {
         public Long productId;
         public Long rawMaterialId;

@@ -22,7 +22,6 @@ public class StockService {
         for (ProductComposition comp : product.compositions) {
             RawMaterial rm = comp.rawMaterial;
             
-            // Cálculo baseado na quantidade necessária na "receita"
             double totalNeeded = comp.quantityNeeded * quantitySold;
 
             if (rm.quantity < totalNeeded) {
@@ -31,8 +30,6 @@ public class StockService {
             }
 
             rm.quantity -= totalNeeded;
-            // O persist é opcional se a entidade estiver no estado 'managed', 
-            // mas mantemos para garantir a sincronização imediata.
             rm.persist(); 
         }
     }
