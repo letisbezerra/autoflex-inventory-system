@@ -1,72 +1,63 @@
-# 🛠️ Autoflex Inventory System - Backend
+🛠️ Autoflex Inventory System - Backend
+This is the backend module for the Autoflex Inventory Management System. Built with Quarkus, this project focuses on high performance and clean architecture.
 
-This is the backend module for the Autoflex Inventory Management System. Built with **Quarkus**, this project focuses on high performance and native Docker integration.
+🚀 Project Status
+Backend Fully Operational. All functional requirements for product management, stock control, and production optimization have been implemented.
 
-## 🚀 Project Status
-Currently, the core API for Product and Raw Material management is operational, including persistence in a relational database.
+🧠 Architecture & Technologies
+Java 21: Latest LTS version.
 
-## 🧠 Architecture & Technologies
-- **Java 21**: Latest LTS version. (RNF001)
-- **Quarkus**: The Supersonic Subatomic Java Framework.
-- **PostgreSQL**: Relational database. (RNF004)
-- **Hibernate Panache**: Simplified persistence using the Active Record pattern.
-- **Docker**: Container management for the database environment.
+Quarkus: The Supersonic Subatomic Java Framework. (RNF005)
 
-## 📋 Implemented Requirements (Sprint 1)
-- [x] **RF001**: Product CRUD (Creation and Listing via API).
-- [x] **RF002**: Raw Material CRUD (Inventory and stock management).
-- [x] **RNF007**: All code, variables, and API messages implemented in **English**.
-- [x] **SmallRye OpenAPI**: Integrated Swagger UI for automatic API documentation.
+PostgreSQL: Relational database. (RNF004)
 
----
+Hibernate Panache: Active Record pattern for simplified persistence.
 
-## 📝 Development Step-by-Step (Documentation)
+Jackson: Efficient JSON serialization/deserialization with circular reference handling.
 
-To reach the current state of the project, the following steps were performed:
+CORS Enabled: Configured to allow integration with React frontend.
 
-1. **Project Initialization**: Generated the Quarkus project structure using Maven with `resteasy-reactive-jackson`, `hibernate-orm-panache`, and `jdbc-postgresql` extensions.
-2. **Database Configuration**: Configured `application.properties` to connect with PostgreSQL and enabled Dev Services to automatically manage Docker containers.
-3. **Domain Modeling**:
-   - Created `RawMaterial.java`: Defines the schema for raw materials and stock quantities.
-   - Created `Product.java`: Defines the schema for final products and pricing.
-   - Created `ProductComposition.java`: Established the Many-to-One relationship between products and their required materials.
-4. **REST API Implementation**:
-   - Created `RawMaterialResource.java`: HTTP endpoints for raw material operations.
-   - Created `ProductResource.java`: HTTP endpoints for product operations.
-5. **Standardization**: Organized all files into a clean package structure (`com.autoflex.inventory.models` and `com.autoflex.inventory.controllers`).
+📋 Implemented Requirements
+[x] RF001: Full Product CRUD.
 
----
+[x] RF002: Full Raw Material CRUD (Inventory tracking).
 
-## ⚙️ How to Run
+[x] RF003: Product-Material Association (Define recipes/compositions).
 
-### Prerequisites
-- Docker Desktop installed and running.
-- Java 21 or higher.
+[x] RF004: Production Suggestion Engine: Intelligent algorithm that suggests production quantities based on current stock, prioritizing products with higher market value.
 
-### Installation
-1. Clone the repository.
-2. Navigate to the backend folder:
-   ```bash
-   cd inventory-backend
+[x] RNF007: Full English implementation for code, database schemas, and API documentation.
 
-### ⚙️ Execution
-Start the application in dev mode:
+📝 Development Highlights
+Intelligent Production Logic: Implemented a service that simulates production by calculating the "bottleneck" material for each product, sorted by price in descending order.
 
-```bash
+Database Integrity: Established robust relationships (OneToMany/ManyToOne) to ensure data consistency between products and materials.
+
+API Documentation: Integrated Swagger UI for real-time testing and schema validation.
+
+CORS Configuration: Prepared the backend for secure communication with the React application.
+
+⚙️ How to Run
+Prerequisites
+Docker Desktop (Running).
+
+Java 21+.
+
+Execution
+Clone the repository and navigate to the folder:
+
+Bash
+cd inventory-backend
+Start in Dev Mode:
+
+Bash
 ./mvnw quarkus:dev
+🔗 Main Endpoints (Swagger)
+Access the interactive documentation to test the API:
+👉 http://localhost:8080/q/swagger-ui/
 
-### 🔗 Main Endpoints
-Once the application is running, you can access:
+GET /production/suggest: The core logic for production optimization.
 
-* **Swagger UI (API Testing):** [http://localhost:8080/q/swagger-ui/](http://localhost:8080/q/swagger-ui/)
-* **List Products:** `GET /products`
-* **List Raw Materials:** `GET /raw-materials`
+POST /compositions: Link raw materials to products.
 
-🔗 Main Endpoints
-Once the application is running, you can access:
-
-Swagger UI (API Testing): http://localhost:8080/q/swagger-ui/
-
-List Products: GET /products
-
-List Raw Materials: GET /raw-materials
+POST /products/{id}/sell: Process sales and automatically deduct stock.
