@@ -57,4 +57,17 @@ public class ProductController {
     public void delete(@PathParam("id") Long id) {
         Product.deleteById(id);
     }
+
+    @PUT
+    @Path("/{id}")
+    @Transactional
+    public Response update(@PathParam("id") Long id, Product product) {
+        Product entity = Product.findById(id);
+        if (entity == null) {
+            return Response.status(Response.Status.NOT_FOUND).entity("Product not found").build();
+        }
+        entity.name = product.name;
+        entity.price = product.price;
+        return Response.ok(entity).build();
+    }
 }
