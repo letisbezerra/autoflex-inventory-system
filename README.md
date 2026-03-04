@@ -9,55 +9,43 @@ This is the full-stack documentation for the Autoflex Inventory Management Syste
 
 ---
 
+## 🧠 Key Business Logic: Production Strategy
+The core of this system is the **Production Suggestion Engine (RF004)**. 
+* **Priority Algorithm:** Products are sorted by unit price (descending). The system allocates available raw materials to the most expensive items first to maximize potential revenue.
+* **Virtual Stock Simulation:** Suggestions are calculated in-memory using a virtual stock map, ensuring that a single batch of material isn't "double-counted" across multiple suggested products.
+
+
+
+---
+
 ## 🖥️ Frontend Module (React + Vite)
 The frontend is a modern Dashboard built for speed and responsiveness.
-
-### 🧠 Architecture & Technologies
-* **React 18 & Vite**: For a fast, component-based development experience.
-* **Tailwind CSS**: For modern, utility-first styling.
-* **Lucide React**: Iconography for the UI.
-* **Axios**: Managed HTTP requests via a centralized `api.js`.
-* **React Router**: Client-side navigation between inventory views.
+* **React 18 & Vite**: Fast, component-based development.
+* **Tailwind CSS**: Utility-first styling for a clean, professional UI.
+* **Data Sync**: Fully synchronized with Backend DTOs (`quantityPossible`, `totalValue`).
 
 ---
 
 ## ⚙️ Backend Module (Quarkus)
-High-performance Java backend focused on data integrity and business logic.
-
-### 🧠 Architecture & Technologies
-* **Java 21 & Quarkus**: The Supersonic Subatomic Java Framework.
-* **PostgreSQL**: Relational database.
-* **Hibernate Panache**: Simplified persistence with the Active Record pattern.
-* **Jackson/JSON**: Optimized for complex object mapping and DTO synchronization.
-* **Dotenv Support**: Secure credential management via `.env` files.
-* **Global Exception Handling**: Custom `RestExceptionMapper` to manage database constraints and integrity errors (e.g., duplicate codes).
-* **CORS**: Fully configured for secure communication via `CorsFilter.java`.
+High-performance Java backend focused on data integrity.
+* **Java 21 & Quarkus**: Supersonic Subatomic Java.
+* **Hibernate Panache**: Active Record pattern for simplified persistence.
+* **Optimization**: Arithmetic-based production calculation (Performance: O(n)).
 
 ---
 
 ## 📋 Implemented Requirements
 
 ### ✅ Functional Requirements (RFs)
-- **RF001 (Product CRUD)**: Management via unique business codes (e.g., `PRD-001`).
-- **RF002 (Raw Material CRUD)**: Full control of inventory materials.
-- **RF003 (Composition)**: Linking raw materials to products with specific "recipe" quantities using specialized `CompositionRequest` DTOs.
-- **RF004 (Production Planning)**: Intelligent dashboard prioritizing **higher-value** products based on current raw material stock.
-- **RF005 (Stock Service)**: Internal logic to validate and deduct materials during production or sales processes.
+- **RF001 (Product CRUD)**: Management via unique business codes.
+- **RF002 (Raw Material CRUD)**: Full inventory control.
+- **RF003 (Composition)**: Linking materials to products via `CompositionRequest`.
+- **RF004 (Production Planning)**: Intelligent dashboard prioritizing **higher-value** products.
+- **RF005 (Stock Service)**: Logic to validate and deduct materials during sales.
 
 ### ✅ Non-Functional Requirements (RNFs)
-- **Security**: Internal database IDs are hidden from the API layer using `@JsonIgnore`. Database credentials are kept in a protected `.env` file.
-- **Data Integrity**: Robust handling of duplicate codes and constraint violations.
-- **Payload Synchronization**: Strict DTO mapping between React and Quarkus to ensure type safety (Double/BigDecimal).
-- **Language**: Full English implementation for code, schemas, and documentation.
-
----
-
-## 📝 Technical Implementation Details
-
-1. **Business Code Identification**: The API uses unique strings (e.g., `code: "PRD-001"`) for all `GET`, `PUT`, and `DELETE` operations.
-2. **Global Error Mapping**: A specialized `RestExceptionMapper` intercepts `ConstraintViolationException` to return clean `409 Conflict` messages.
-3. **Production Suggestion Engine**: Logic that sorts products by price (**Highest First**), validates availability across all materials in the composition, and calculates max volume.
-4. **JSON Optimization**: Prevents circular references in the `ProductComposition` model while maintaining bidirectional visibility where needed.
+- **Security**: Database credentials managed via `.env`. IDs hidden via `@JsonIgnore`.
+- **Language**: Full English implementation (code, UI, and docs) per **RNF007**.
 
 ---
 
@@ -81,5 +69,4 @@ npm install
 npm run dev
 ```
 
-🔗 API Reference (Swagger UI)
-👉 http://localhost:8080/q/swagger-ui/
+🔗 API Reference (Swagger UI): http://localhost:8080/q/swagger-ui/
