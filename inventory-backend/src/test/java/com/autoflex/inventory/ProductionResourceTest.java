@@ -9,6 +9,10 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 @QuarkusTest
 public class ProductionResourceTest {
 
+    /**
+     * Validates that the Production Suggestion endpoint is reachable 
+     * and returns a non-null list of suggestions.
+     */
     @Test
     public void testProductionSuggestionEndpoint() {
         given()

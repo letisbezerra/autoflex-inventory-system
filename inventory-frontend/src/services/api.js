@@ -4,8 +4,9 @@ const api = axios.create({
     baseURL: 'http://127.0.0.1:8080',
 });
 
-// Services based on your Swagger UI definitions
-// services/api.js
+/**
+ * Product API services
+ */
 export const productService = {
     getAll: () => api.get('/products'),
     create: (data) => api.post('/products', data),
@@ -14,6 +15,9 @@ export const productService = {
     sell: (code) => api.post(`/products/${code}/sell`),
 };
 
+/**
+ * Raw Material API services
+ */
 export const materialService = {
     getAll: () => api.get('/raw-materials'),
     create: (data) => api.post('/raw-materials', data),
@@ -21,10 +25,12 @@ export const materialService = {
     delete: (code) => api.delete(`/raw-materials/${code}`),
 };
 
+/**
+ * Production and Composition API services
+ */
 export const productionService = {
     getDashboard: () => api.get('/production/suggest'),
     associate: (data) => api.post('/compositions', data),
 };
 
 export default api;
-

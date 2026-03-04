@@ -3,7 +3,6 @@ package com.autoflex.inventory.services;
 import com.autoflex.inventory.models.Product;
 import com.autoflex.inventory.models.ProductComposition;
 import com.autoflex.inventory.models.RawMaterial;
-import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,11 +27,16 @@ public class ProductionService {
         }
     }
 
+    /**
+     * Calculates production suggestions based on current stock.
+     * Logic: Sorts by price descending to prioritize higher-value products (RF004).
+     */
     public List<SuggestionDTO> getProductionSuggestion() {
-        // Ordenação por preço decrescente conforme RF004
+        // Find products ordered by price descending per requirement RF004
         List<Product> products = Product.find("order by price desc").list();
         List<RawMaterial> allMaterials = RawMaterial.listAll();
         
+        // Map to track available stock during calculation without hitting the DB repeatedly
         Map<String, Double> virtualStock = new HashMap<>();
         for (RawMaterial rm : allMaterials) {
             virtualStock.put(rm.code, rm.quantity != null ? rm.quantity : 0.0);
@@ -48,6 +52,7 @@ public class ProductionService {
             if (qtyPossible > 0) {
                 suggestions.add(new SuggestionDTO(product.name, qtyPossible, product.price));
 
+                // Deduct from virtual stock to avoid over-promising materials for the next products
                 for (ProductComposition comp : product.compositions) {
                     double currentStock = virtualStock.get(comp.rawMaterial.code);
                     virtualStock.put(comp.rawMaterial.code, currentStock - (comp.quantityNeeded * qtyPossible));

@@ -8,9 +8,7 @@ const RawMaterials = () => {
   const [editingCode, setEditingCode] = useState(null);
   const [editQty, setEditQty] = useState('');
 
-  useEffect(() => {
-    loadMaterials();
-  }, []);
+  useEffect(() => { loadMaterials(); }, []);
 
   const loadMaterials = async () => {
     try {
@@ -28,7 +26,7 @@ const RawMaterials = () => {
       setFormData({ code: '', name: '', quantity: '' });
       loadMaterials();
     } catch (e) {
-      alert("Error adding material. Check if code is unique.");
+      alert("Error adding material. Check if business code is unique.");
     }
   };
 
@@ -38,7 +36,7 @@ const RawMaterials = () => {
       setEditingCode(null);
       loadMaterials();
     } catch (e) {
-      alert("Error updating stock.");
+      alert("Error updating stock quantity.");
     }
   };
 
@@ -67,7 +65,7 @@ const RawMaterials = () => {
             <input 
               type="text" 
               value={formData.code} 
-              onChange={e => setFormData({...formData, code: e.target.value})} 
+              onChange={e => setFormData({...formData, code: e.target.value.toUpperCase()})} 
               className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
               placeholder="e.g., RM-01" 
               required 
@@ -96,7 +94,6 @@ const RawMaterials = () => {
               required 
             />
           </div>
-          {/* BOTÃO ALTERADO PARA AZUL (bg-blue-600) */}
           <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-md">
             <Plus size={18} /> Add
           </button>
@@ -114,53 +111,45 @@ const RawMaterials = () => {
             </tr>
           </thead>
           <tbody>
-            {materials.length === 0 ? (
-              <tr>
-                <td colSpan="4" className="p-8 text-center text-gray-400 italic">
-                  No materials found. Add your first entry above.
+            {materials.map(m => (
+              <tr key={m.code} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
+                <td className="p-4 font-bold text-blue-600">{m.code}</td>
+                <td className="p-4 font-medium text-slate-700">{m.name}</td>
+                <td className="p-4">
+                  {editingCode === m.code ? (
+                    <div className="flex items-center gap-2">
+                      <input 
+                        type="number" 
+                        step="0.01" 
+                        value={editQty} 
+                        onChange={e => setEditQty(e.target.value)} 
+                        className="w-24 p-1 border rounded bg-white" 
+                      />
+                      <button onClick={() => handleUpdateQty(m.code)} className="text-emerald-500 hover:text-emerald-700 p-1 bg-emerald-50 rounded">
+                        <Save size={16} />
+                      </button>
+                      <button onClick={() => setEditingCode(null)} className="text-slate-400 hover:text-slate-600">
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 group">
+                      <span className={`font-bold px-2 py-1 rounded ${m.quantity < 10 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-700'}`}>
+                        {m.quantity}
+                      </span>
+                      <button onClick={() => {setEditingCode(m.code); setEditQty(m.quantity);}} className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-500 transition-all">
+                        <Edit3 size={14} />
+                      </button>
+                    </div>
+                  )}
+                </td>
+                <td className="p-4 text-right">
+                  <button onClick={() => handleDelete(m.code)} className="p-2 text-red-300 hover:text-red-600 transition-colors">
+                    <Trash2 size={18} />
+                  </button>
                 </td>
               </tr>
-            ) : (
-              materials.map(m => (
-                <tr key={m.code} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
-                  <td className="p-4 font-bold text-blue-600">{m.code}</td>
-                  <td className="p-4 font-medium text-slate-700">{m.name}</td>
-                  <td className="p-4 text-left">
-                    {editingCode === m.code ? (
-                      <div className="flex items-center gap-2">
-                        <input 
-                          type="number" 
-                          step="0.01" 
-                          value={editQty} 
-                          onChange={e => setEditQty(e.target.value)} 
-                          className="w-24 p-1 border rounded bg-white" 
-                        />
-                        <button onClick={() => handleUpdateQty(m.code)} className="text-emerald-500 hover:text-emerald-700 p-1 bg-emerald-50 rounded" title="Save">
-                          <Save size={16} />
-                        </button>
-                        <button onClick={() => setEditingCode(null)} className="text-slate-400 hover:text-slate-600" title="Cancel">
-                          <X size={16} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-3 group">
-                        <span className={`font-bold px-2 py-1 rounded ${m.quantity < 10 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-700'}`}>
-                          {m.quantity}
-                        </span>
-                        <button onClick={() => {setEditingCode(m.code); setEditQty(m.quantity);}} className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-500 transition-all" title="Edit Stock">
-                          <Edit3 size={14} />
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                  <td className="p-4 text-right">
-                    <button onClick={() => handleDelete(m.code)} className="p-2 text-red-300 hover:text-red-600 transition-colors" title="Delete Material">
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>

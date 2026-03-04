@@ -9,6 +9,9 @@ import jakarta.transaction.Transactional;
 @ApplicationScoped
 public class StockService {
 
+    /**
+     * Processes a sale by deducting the necessary raw materials from stock.
+     */
     @Transactional
     public void processProductSale(Product product, int quantitySold) {
         if (quantitySold <= 0) {
@@ -23,7 +26,7 @@ public class StockService {
 
                 if (rm.quantity < totalNeeded) {
                     throw new RuntimeException("Insufficient stock for material: " + rm.name + 
-                        " (Needed: " + totalNeeded + ", Available: " + rm.quantity + ")");
+                        " (Required: " + totalNeeded + ", Available: " + rm.quantity + ")");
                 }
 
                 rm.quantity -= totalNeeded;

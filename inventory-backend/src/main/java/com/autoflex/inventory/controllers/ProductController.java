@@ -119,10 +119,8 @@ public class ProductController {
     public static class ProductRequest {
         @Schema(required = true, examples = {"PRD-001"})
         public String code;
-        
         @Schema(required = true, examples = {"Professional Camera"})
         public String name;
-        
         @Schema(required = true, examples = {"1500.00"})
         public BigDecimal price;
     }

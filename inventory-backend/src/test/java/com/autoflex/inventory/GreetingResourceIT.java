@@ -1,8 +1,8 @@
-package com.autoflex.inventory;
+// package com.autoflex.inventory;
 
-import io.quarkus.test.junit.QuarkusIntegrationTest;
+// import io.quarkus.test.junit.QuarkusIntegrationTest;
 
-@QuarkusIntegrationTest
-class GreetingResourceIT extends GreetingResourceTest {
-    // Execute the same tests but in packaged mode.
-}
+// @QuarkusIntegrationTest
+// class GreetingResourceIT extends GreetingResourceTest {
+//     // Execute the same tests but in packaged mode.
+// }

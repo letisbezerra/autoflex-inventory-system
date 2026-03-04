@@ -27,7 +27,6 @@ function App() {
               </Link>
             </li>
             <li>
-              {/* Rota corrigida para bater com o path abaixo */}
               <Link to="/materials" className="flex items-center gap-3 p-3 rounded-lg hover:bg-slate-800 transition-colors">
                 <Truck size={20} /> Raw Materials
               </Link>

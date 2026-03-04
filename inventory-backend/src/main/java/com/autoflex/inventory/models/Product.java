@@ -14,8 +14,13 @@ public class Product extends PanacheEntityBase {
     @JsonIgnore 
     public Long id;
 
+    @Column(nullable = false, unique = true)
     public String code;
+
+    @Column(nullable = false)
     public String name;
+
+    @Column(nullable = false)
     public BigDecimal price;
     
     public Double quantity = 0.0;

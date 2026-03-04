@@ -1,4 +1,4 @@
-package com.autoflex.inventory; // Verifique se o seu pacote é exatamente este
+package com.autoflex.inventory; 
 
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerResponseContext;
@@ -8,9 +8,12 @@ import java.io.IOException;
 
 @Provider
 public class CorsFilter implements ContainerResponseFilter {
+    
     @Override
     public void filter(ContainerRequestContext requestContext, 
                       ContainerResponseContext responseContext) throws IOException {
+        
+        // Allows requests from any origin - essential for local development and React integration
         responseContext.getHeaders().add("Access-Control-Allow-Origin", "*");
         responseContext.getHeaders().add("Access-Control-Allow-Credentials", "true");
         responseContext.getHeaders().add("Access-Control-Allow-Headers", "*");

@@ -65,7 +65,6 @@ const Dashboard = () => {
               </div>
               <div className="text-center bg-slate-50 px-6 py-2 rounded-lg">
                 <p className="text-[10px] text-gray-400 font-bold uppercase">Qty to Produce</p>
-                {/* Alinhado com o DTO do Backend */}
                 <p className="text-2xl font-black text-slate-800">{item.quantityPossible}</p>
               </div>
               <div className="text-right">
