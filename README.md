@@ -1,21 +1,36 @@
-# 🛠️ Autoflex Inventory System - Backend
+# 🛠️ Autoflex Inventory System
 
-This is the backend module for the Autoflex Inventory Management System. Built with **Quarkus**, this project focuses on high performance, clean architecture, and business-driven logic.
+This is the full-stack documentation for the Autoflex Inventory Management System. The project focuses on high performance, clean architecture, and business-driven logic.
 
 ---
 
 ## 🚀 Project Status
-**Backend Fully Operational.** All functional requirements for product management, stock control, and production optimization are implemented. The system now utilizes **Business Codes** for all primary operations, ensuring a decoupled and professional API.
+**System Fully Operational.** All functional requirements for product management, stock control, and production optimization are implemented. The system utilizes **Business Codes** for all primary operations, ensuring a decoupled and professional API.
 
 ---
 
-## 🧠 Architecture & Technologies
-* **Java 21**: Latest LTS version.
-* **Quarkus**: The Supersonic Subatomic Java Framework.
+## 🖥️ Frontend Module (React + Vite)
+The frontend is a modern Dashboard built for speed and responsiveness.
+
+### 🧠 Architecture & Technologies
+* **React 18 & Vite**: For a fast, component-based development experience.
+* **Tailwind CSS**: For modern, utility-first styling.
+* **Lucide React**: Iconography for the UI.
+* **Axios**: Managed HTTP requests via a centralized `api.js`.
+* **React Router**: Client-side navigation between inventory views.
+
+---
+
+## ⚙️ Backend Module (Quarkus)
+High-performance Java backend focused on data integrity and business logic.
+
+### 🧠 Architecture & Technologies
+* **Java 21 & Quarkus**: The Supersonic Subatomic Java Framework.
 * **PostgreSQL**: Relational database.
-* **Hibernate Panache**: Active Record pattern for simplified persistence.
+* **Hibernate Panache**: Simplified persistence with the Active Record pattern.
+* **Dotenv Support**: Secure credential management via `.env` files.
 * **Global Exception Handling**: Custom `RestExceptionMapper` to manage database constraints and integrity errors (e.g., duplicate codes).
-* **CORS**: Fully configured for secure communication with React/Vite frontends.
+* **CORS**: Fully configured for secure communication via `CorsFilter.java`.
 
 ---
 
@@ -29,7 +44,7 @@ This is the backend module for the Autoflex Inventory Management System. Built w
 - **Sales Logic**: `/sell` endpoint for automatic stock validation and deduction.
 
 ### ✅ Non-Functional Requirements (RNFs)
-- **Security**: Internal database IDs are hidden from the API layer using `@JsonIgnore`.
+- **Security**: Internal database IDs are hidden from the API layer using `@JsonIgnore`. Database credentials are kept in a protected `.env` file.
 - **Data Integrity**: Robust handling of duplicate codes and constraint violations.
 - **Language**: Full English implementation for code, schemas, and documentation.
 
@@ -37,39 +52,32 @@ This is the backend module for the Autoflex Inventory Management System. Built w
 
 ## 📝 Technical Implementation Details
 
-1. **Business Code Identification**: Instead of exposing database IDs, the API uses unique strings (e.g., `code: "PRD-001"`) for all `GET`, `PUT`, and `DELETE` operations.
-2. **Global Error Mapping**: A specialized `RestExceptionMapper` intercepts `ConstraintViolationException` to return clean `409 Conflict` messages instead of generic server errors.
-3. **Production Suggestion Engine**: Logic that:
-   - Sorts products by price (**Highest First**).
-   - Validates availability across multiple raw materials.
-   - Calculates the maximum possible production volume.
-4. **JSON Optimization**: Prevents circular references in the `ProductComposition` model to maintain a clean payload for the frontend.
+1. **Business Code Identification**: The API uses unique strings (e.g., `code: "PRD-001"`) for all `GET`, `PUT`, and `DELETE` operations.
+2. **Global Error Mapping**: A specialized `RestExceptionMapper` intercepts `ConstraintViolationException` to return clean `409 Conflict` messages.
+3. **Production Suggestion Engine**: Logic that sorts products by price (**Highest First**), validates availability, and calculates max volume.
+4. **JSON Optimization**: Prevents circular references in the `ProductComposition` model.
 
 ---
 
 ## ⚙️ How to Run
 
 ### 1. Prerequisites
-* Docker Desktop (Running PostgreSQL).
+* Docker Desktop (PostgreSQL).
 * Java 21+.
+* Node.js & npm.
 
-### 2. Execution
+### 2. Backend
 ```bash
-# Navigate to the folder
 cd inventory-backend
-
-# Run in Dev Mode
 ./mvnw quarkus:dev
+```
+
+### 3. Frontend
+```bash
+cd inventory-frontend
+npm install
+npm run dev
+```
+
 🔗 API Reference (Swagger UI)
-Access the interactive documentation while the app is running:
-
 👉 http://localhost:8080/q/swagger-ui/
-
-Key Endpoints:
-POST /compositions: Define the "recipe" for a product.
-
-GET /production/suggest: View the prioritized production dashboard.
-
-PUT /products/{code}: Update details using the business code.
-
-DELETE /raw-materials/{code}: Remove materials via business code.
