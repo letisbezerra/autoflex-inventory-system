@@ -1,24 +1,24 @@
 import axios from 'axios';
 
 const api = axios.create({
-    // URL do seu backend Quarkus
-    baseURL: 'http://localhost:8080',
+    baseURL: 'http://127.0.0.1:8080',
 });
 
 // Services based on your Swagger UI definitions
+// services/api.js
 export const productService = {
     getAll: () => api.get('/products'),
     create: (data) => api.post('/products', data),
-    update: (id, data) => api.put(`/products/${id}`, data),
-    delete: (id) => api.delete(`/products/${id}`),
-    sell: (id) => api.post(`/products/${id}/sell`),
+    update: (code, data) => api.put(`/products/${code}`, data),
+    delete: (code) => api.delete(`/products/${code}`),
+    sell: (code) => api.post(`/products/${code}/sell`),
 };
 
 export const materialService = {
     getAll: () => api.get('/raw-materials'),
     create: (data) => api.post('/raw-materials', data),
-    update: (id, data) => api.put(`/raw-materials/${id}`, data),
-    delete: (id) => api.delete(`/raw-materials/${id}`),
+    update: (code, data) => api.put(`/raw-materials/${code}`, data),
+    delete: (code) => api.delete(`/raw-materials/${code}`),
 };
 
 export const productionService = {
@@ -27,3 +27,4 @@ export const productionService = {
 };
 
 export default api;
+

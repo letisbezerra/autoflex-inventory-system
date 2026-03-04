@@ -5,9 +5,8 @@ import { Trash2, PlusCircle, RefreshCw } from 'lucide-react';
 const Materials = () => {
     const [materials, setMaterials] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [formData, setFormData] = useState({ name: '', quantity: '' });
+    const [formData, setFormData] = useState({ code: '', name: '', quantity: '' });
 
-    // Load materials from Backend
     const fetchMaterials = async () => {
         try {
             setLoading(true);
@@ -25,35 +24,36 @@ const Materials = () => {
         fetchMaterials();
     }, []);
 
-    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
             await materialService.create({
+                code: formData.code, 
                 name: formData.name,
                 quantity: parseFloat(formData.quantity)
             });
-            setFormData({ name: '', quantity: '' });
-            fetchMaterials(); // Refresh list
+            setFormData({ code: '', name: '', quantity: '' });
+            fetchMaterials(); 
         } catch (error) {
-            alert("Error saving material");
+            const errorMsg = error.response?.data?.error || "Error saving material";
+            alert(errorMsg);
         }
     };
 
-    // Handle delete
-    const handleDelete = async (id) => {
-        if (window.confirm("Delete this material?")) {
+    const handleDelete = async (code) => {
+        if (window.confirm(`Delete material ${code}?`)) {
             try {
-                await materialService.delete(id);
+                await materialService.delete(code);
                 fetchMaterials();
             } catch (error) {
-                alert("Error deleting material. It might be linked to a product.");
+                const errorMsg = error.response?.data?.error || "Error deleting material";
+                alert(errorMsg);
             }
         }
     };
 
     return (
-        <div className="p-8 max-w-5xl mx-auto">
+        <div className="p-8 max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-8">
                 <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Raw Materials</h1>
                 <button 
@@ -66,6 +66,17 @@ const Materials = () => {
 
             {/* Form Section */}
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 mb-10 flex gap-4 items-end">
+                <div className="w-1/4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Business Code</label>
+                    <input
+                        type="text"
+                        required
+                        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                        value={formData.code}
+                        onChange={(e) => setFormData({...formData, code: e.target.value.toUpperCase()})}
+                        placeholder="Ex: RM-001"
+                    />
+                </div>
                 <div className="flex-1">
                     <label className="block text-sm font-medium text-gray-700 mb-1">Material Name</label>
                     <input
@@ -74,7 +85,7 @@ const Materials = () => {
                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
-                        placeholder="Ex: Steel, Plastic..."
+                        placeholder="Ex: Steel Plate"
                     />
                 </div>
                 <div className="w-32">
@@ -82,6 +93,7 @@ const Materials = () => {
                     <input
                         type="number"
                         required
+                        step="0.01"
                         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                         value={formData.quantity}
                         onChange={(e) => setFormData({...formData, quantity: e.target.value})}
@@ -98,7 +110,7 @@ const Materials = () => {
                 <table className="w-full text-left">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th className="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">ID</th>
+                            <th className="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">Code</th>
                             <th className="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">Name</th>
                             <th className="px-6 py-4 text-sm font-semibold text-gray-600 uppercase">Stock Quantity</th>
                             <th className="px-6 py-4 text-sm font-semibold text-gray-600 uppercase text-right">Actions</th>
@@ -106,15 +118,15 @@ const Materials = () => {
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {materials.map((m) => (
-                            <tr key={m.id} className="hover:bg-gray-50 transition">
-                                <td className="px-6 py-4 text-sm text-gray-500">#{m.id}</td>
+                            <tr key={m.code} className="hover:bg-gray-50 transition">
+                                <td className="px-6 py-4 font-mono text-sm text-blue-600 font-bold">{m.code}</td>
                                 <td className="px-6 py-4 font-medium text-gray-900">{m.name}</td>
                                 <td className={`px-6 py-4 font-semibold ${m.quantity < 10 ? 'text-red-500' : 'text-green-600'}`}>
                                     {m.quantity.toFixed(2)}
                                 </td>
                                 <td className="px-6 py-4 text-right">
                                     <button 
-                                        onClick={() => handleDelete(m.id)}
+                                        onClick={() => handleDelete(m.code)}
                                         className="text-red-500 hover:text-red-700 p-2 transition"
                                     >
                                         <Trash2 size={18} />
