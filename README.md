@@ -47,6 +47,15 @@ High-performance Java backend focused on data integrity.
 - **Security**: Database credentials managed via `.env`. IDs hidden via `@JsonIgnore`.
 - **Language**: Full English implementation (code, UI, and docs) per **RNF007**.
 
+### ✅ Functional Requirements (RFs)
+- **RF001 - RF003**: Full CRUD for Products, Raw Materials, and their associations.
+- **RF004 & RF008**: Production Suggestion logic and Dashboard visualization.
+- **RF005 - RF007**: Responsive Frontend interfaces for all management modules.
+
+### 🌟 Desirable Requirements (Bonus)
+- **Unit Testing**: Implemented using JUnit 5 and RestAssured to validate core business logic and API availability.
+- **Integration Testing**: Basic infrastructure ready for Quarkus integration tests.
+
 ---
 
 ## ⚙️ How to Run
@@ -67,6 +76,12 @@ cd inventory-backend
 cd inventory-frontend
 npm install
 npm run dev
+```
+
+### 4. Running Tests
+```bash
+cd inventory-backend
+./mvnw test
 ```
 
 🔗 API Reference (Swagger UI): http://localhost:8080/q/swagger-ui/
