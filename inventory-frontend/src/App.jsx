@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Package, Truck, LayoutDashboard } from 'lucide-react';
-import Materials from './pages/Materials';
 
-// Temporary components for the other routes
-const Products = () => <div className="p-8"><h1 className="text-2xl font-bold">Products Management</h1><p className="text-gray-600">Coming soon...</p></div>;
-const Dashboard = () => <div className="p-8"><h1 className="text-2xl font-bold">Production Dashboard</h1><p className="text-gray-600">Coming soon...</p></div>;
+// Importação das páginas reais
+import Materials from './pages/Materials';
+import Products from './pages/Products';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -43,6 +43,7 @@ function App() {
         {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto bg-slate-50">
           <Routes>
+            {/* Agora as rotas apontam para os componentes funcionais */}
             <Route path="/" element={<Dashboard />} />
             <Route path="/products" element={<Products />} />
             <Route path="/materials" element={<Materials />} />
