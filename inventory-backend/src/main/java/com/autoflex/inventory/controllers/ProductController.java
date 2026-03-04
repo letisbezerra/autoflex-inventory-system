@@ -19,7 +19,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path("/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "1. Products", description = "Product management using business codes")
+@Tag(name = "2. Products", description = "Product management using business codes")
 public class ProductController {
 
     @Inject

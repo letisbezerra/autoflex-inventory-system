@@ -20,7 +20,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path("/production")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "3. Production Planning", description = "Smart dashboard for production suggestions")
+@Tag(name = "4. Production Planning", description = "Smart dashboard for production suggestions")
 public class ProductionController {
 
     @Inject

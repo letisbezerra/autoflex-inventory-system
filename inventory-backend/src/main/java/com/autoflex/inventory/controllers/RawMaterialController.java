@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Path("/raw-materials")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-@Tag(name = "2. Raw Materials", description = "Management of raw materials using business codes")
+@Tag(name = "1. Raw Materials", description = "Management of raw materials using business codes")
 public class RawMaterialController {
 
     @GET

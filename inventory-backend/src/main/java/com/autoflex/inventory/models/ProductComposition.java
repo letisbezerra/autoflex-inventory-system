@@ -1,13 +1,16 @@
 package com.autoflex.inventory.models;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
+import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
 
 @Entity
-public class ProductComposition extends PanacheEntity {
+public class ProductComposition extends PanacheEntityBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @JsonIgnore
+    public Long id;
 
     @ManyToOne
     @JsonIgnore 
