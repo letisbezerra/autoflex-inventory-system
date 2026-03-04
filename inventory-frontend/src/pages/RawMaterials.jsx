@@ -8,13 +8,17 @@ const RawMaterials = () => {
   const [editingCode, setEditingCode] = useState(null);
   const [editQty, setEditQty] = useState('');
 
-  useEffect(() => { loadMaterials(); }, []);
+  useEffect(() => {
+    loadMaterials();
+  }, []);
 
   const loadMaterials = async () => {
     try {
       const res = await api.get('/raw-materials');
       setMaterials(res.data);
-    } catch (e) { console.error("Error loading materials", e); }
+    } catch (e) {
+      console.error("Error loading materials", e);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -23,7 +27,9 @@ const RawMaterials = () => {
       await api.post('/raw-materials', { ...formData, quantity: parseFloat(formData.quantity) });
       setFormData({ code: '', name: '', quantity: '' });
       loadMaterials();
-    } catch (e) { alert("Error adding material. Check if code is unique."); }
+    } catch (e) {
+      alert("Error adding material. Check if code is unique.");
+    }
   };
 
   const handleUpdateQty = async (code) => {
@@ -31,13 +37,19 @@ const RawMaterials = () => {
       await api.put(`/raw-materials/${code}`, { quantity: parseFloat(editQty) });
       setEditingCode(null);
       loadMaterials();
-    } catch (e) { alert("Error updating stock."); }
+    } catch (e) {
+      alert("Error updating stock.");
+    }
   };
 
   const handleDelete = async (code) => {
-    if (window.confirm("Delete material? This may affect existing compositions.")) {
-      await api.delete(`/raw-materials/${code}`);
-      loadMaterials();
+    if (window.confirm("Are you sure you want to delete this material? This may affect existing product compositions.")) {
+      try {
+        await api.delete(`/raw-materials/${code}`);
+        loadMaterials();
+      } catch (e) {
+        alert("Error deleting material.");
+      }
     }
   };
 
@@ -48,21 +60,44 @@ const RawMaterials = () => {
       </h1>
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-8">
-        <h2 className="text-sm font-bold text-gray-400 uppercase mb-4 tracking-widest">New Entry</h2>
+        <h2 className="text-sm font-bold text-gray-400 uppercase mb-4 tracking-widest text-left">New Entry</h2>
         <form onSubmit={handleSubmit} className="flex flex-wrap gap-4 items-end">
-          <div className="flex-1 min-w-[150px]">
+          <div className="flex-1 min-w-[150px] text-left">
             <label className="block text-xs font-bold text-slate-500 mb-1">Business Code</label>
-            <input type="text" value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g., RM-01" required />
+            <input 
+              type="text" 
+              value={formData.code} 
+              onChange={e => setFormData({...formData, code: e.target.value})} 
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+              placeholder="e.g., RM-01" 
+              required 
+            />
           </div>
-          <div className="flex-1 min-w-[200px]">
+          <div className="flex-1 min-w-[200px] text-left">
             <label className="block text-xs font-bold text-slate-500 mb-1">Name</label>
-            <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="e.g., Steel Tube" required />
+            <input 
+              type="text" 
+              value={formData.name} 
+              onChange={e => setFormData({...formData, name: e.target.value})} 
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+              placeholder="e.g., Steel Tube" 
+              required 
+            />
           </div>
-          <div className="w-32">
+          <div className="w-32 text-left">
             <label className="block text-xs font-bold text-slate-500 mb-1">Stock Qty</label>
-            <input type="number" step="0.01" value={formData.quantity} onChange={e => setFormData({...formData, quantity: e.target.value})} className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" placeholder="0.00" required />
+            <input 
+              type="number" 
+              step="0.01" 
+              value={formData.quantity} 
+              onChange={e => setFormData({...formData, quantity: e.target.value})} 
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none" 
+              placeholder="0.00" 
+              required 
+            />
           </div>
-          <button type="submit" className="bg-slate-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-black transition-all flex items-center gap-2 shadow-md">
+          {/* BOTÃO ALTERADO PARA AZUL (bg-blue-600) */}
+          <button type="submit" className="bg-blue-600 text-white px-6 py-2 rounded-lg font-bold hover:bg-blue-700 transition-all flex items-center gap-2 shadow-md">
             <Plus size={18} /> Add
           </button>
         </form>
@@ -79,33 +114,53 @@ const RawMaterials = () => {
             </tr>
           </thead>
           <tbody>
-            {materials.map(m => (
-              <tr key={m.code} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
-                <td className="p-4 font-bold text-blue-600">{m.code}</td>
-                <td className="p-4 font-medium text-slate-700">{m.name}</td>
-                <td className="p-4">
-                  {editingCode === m.code ? (
-                    <div className="flex items-center gap-2">
-                      <input type="number" step="0.01" value={editQty} onChange={e => setEditQty(e.target.value)} className="w-24 p-1 border rounded bg-white" />
-                      <button onClick={() => handleUpdateQty(m.code)} className="text-emerald-500 hover:text-emerald-700 p-1 bg-emerald-50 rounded"><Save size={16} /></button>
-                      <button onClick={() => setEditingCode(null)} className="text-slate-400 hover:text-slate-600"><X size={16} /></button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-3 group">
-                      <span className={`font-bold px-2 py-1 rounded ${m.quantity < 10 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-700'}`}>
-                        {m.quantity}
-                      </span>
-                      <button onClick={() => {setEditingCode(m.code); setEditQty(m.quantity);}} className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-500 transition-all">
-                        <Edit3 size={14} />
-                      </button>
-                    </div>
-                  )}
-                </td>
-                <td className="p-4 text-right">
-                  <button onClick={() => handleDelete(m.code)} className="p-2 text-red-200 hover:text-red-600 rounded-lg hover:bg-red-50"><Trash2 size={18} /></button>
+            {materials.length === 0 ? (
+              <tr>
+                <td colSpan="4" className="p-8 text-center text-gray-400 italic">
+                  No materials found. Add your first entry above.
                 </td>
               </tr>
-            ))}
+            ) : (
+              materials.map(m => (
+                <tr key={m.code} className="border-b border-gray-50 hover:bg-slate-50 transition-colors">
+                  <td className="p-4 font-bold text-blue-600">{m.code}</td>
+                  <td className="p-4 font-medium text-slate-700">{m.name}</td>
+                  <td className="p-4 text-left">
+                    {editingCode === m.code ? (
+                      <div className="flex items-center gap-2">
+                        <input 
+                          type="number" 
+                          step="0.01" 
+                          value={editQty} 
+                          onChange={e => setEditQty(e.target.value)} 
+                          className="w-24 p-1 border rounded bg-white" 
+                        />
+                        <button onClick={() => handleUpdateQty(m.code)} className="text-emerald-500 hover:text-emerald-700 p-1 bg-emerald-50 rounded" title="Save">
+                          <Save size={16} />
+                        </button>
+                        <button onClick={() => setEditingCode(null)} className="text-slate-400 hover:text-slate-600" title="Cancel">
+                          <X size={16} />
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 group">
+                        <span className={`font-bold px-2 py-1 rounded ${m.quantity < 10 ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-700'}`}>
+                          {m.quantity}
+                        </span>
+                        <button onClick={() => {setEditingCode(m.code); setEditQty(m.quantity);}} className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-blue-500 transition-all" title="Edit Stock">
+                          <Edit3 size={14} />
+                        </button>
+                      </div>
+                    )}
+                  </td>
+                  <td className="p-4 text-right">
+                    <button onClick={() => handleDelete(m.code)} className="p-2 text-red-300 hover:text-red-600 transition-colors" title="Delete Material">
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

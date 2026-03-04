@@ -3,6 +3,7 @@ package com.autoflex.inventory.services;
 import com.autoflex.inventory.models.Product;
 import com.autoflex.inventory.models.ProductComposition;
 import com.autoflex.inventory.models.RawMaterial;
+import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -28,8 +29,8 @@ public class ProductionService {
     }
 
     public List<SuggestionDTO> getProductionSuggestion() {
+        // Ordenação por preço decrescente conforme RF004
         List<Product> products = Product.find("order by price desc").list();
-        
         List<RawMaterial> allMaterials = RawMaterial.listAll();
         
         Map<String, Double> virtualStock = new HashMap<>();
@@ -42,39 +43,28 @@ public class ProductionService {
         for (Product product : products) {
             if (product.compositions == null || product.compositions.isEmpty()) continue;
 
-            int count = 0;
-            boolean canProduceMore = true;
+            int qtyPossible = calculateMaxProduction(product, virtualStock);
 
-            while (canProduceMore) {
+            if (qtyPossible > 0) {
+                suggestions.add(new SuggestionDTO(product.name, qtyPossible, product.price));
+
                 for (ProductComposition comp : product.compositions) {
-                    if (comp.quantityNeeded == null || comp.quantityNeeded <= 0) {
-                        canProduceMore = false;
-                        break;
-                    }
-
-                    double currentStock = virtualStock.getOrDefault(comp.rawMaterial.code, 0.0);
-                    if (currentStock < comp.quantityNeeded) {
-                        canProduceMore = false;
-                        break;
-                    }
+                    double currentStock = virtualStock.get(comp.rawMaterial.code);
+                    virtualStock.put(comp.rawMaterial.code, currentStock - (comp.quantityNeeded * qtyPossible));
                 }
-
-                if (canProduceMore) {
-                    for (ProductComposition comp : product.compositions) {
-                        double currentStock = virtualStock.get(comp.rawMaterial.code);
-                        virtualStock.put(comp.rawMaterial.code, currentStock - comp.quantityNeeded);
-                    }
-                    count++;
-                }
-                
-                if (count > 5000) break; 
-            }
-
-            if (count > 0) {
-                suggestions.add(new SuggestionDTO(product.name, count, product.price));
             }
         }
-
         return suggestions;
+    }
+
+    private int calculateMaxProduction(Product product, Map<String, Double> virtualStock) {
+        int max = Integer.MAX_VALUE;
+        for (ProductComposition comp : product.compositions) {
+            if (comp.quantityNeeded == null || comp.quantityNeeded <= 0) continue;
+            double available = virtualStock.getOrDefault(comp.rawMaterial.code, 0.0);
+            int possible = (int) (available / comp.quantityNeeded);
+            if (possible < max) max = possible;
+        }
+        return (max == Integer.MAX_VALUE) ? 0 : max;
     }
 }
