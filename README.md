@@ -28,6 +28,7 @@ High-performance Java backend focused on data integrity and business logic.
 * **Java 21 & Quarkus**: The Supersonic Subatomic Java Framework.
 * **PostgreSQL**: Relational database.
 * **Hibernate Panache**: Simplified persistence with the Active Record pattern.
+* **Jackson/JSON**: Optimized for complex object mapping and DTO synchronization.
 * **Dotenv Support**: Secure credential management via `.env` files.
 * **Global Exception Handling**: Custom `RestExceptionMapper` to manage database constraints and integrity errors (e.g., duplicate codes).
 * **CORS**: Fully configured for secure communication via `CorsFilter.java`.
@@ -39,13 +40,14 @@ High-performance Java backend focused on data integrity and business logic.
 ### ✅ Functional Requirements (RFs)
 - **RF001 (Product CRUD)**: Management via unique business codes (e.g., `PRD-001`).
 - **RF002 (Raw Material CRUD)**: Full control of inventory materials.
-- **RF003 (Composition)**: Linking raw materials to products with specific "recipe" quantities.
+- **RF003 (Composition)**: Linking raw materials to products with specific "recipe" quantities using specialized `CompositionRequest` DTOs.
 - **RF004 (Production Planning)**: Intelligent dashboard prioritizing **higher-value** products based on current raw material stock.
-- **Sales Logic**: `/sell` endpoint for automatic stock validation and deduction.
+- **RF005 (Stock Service)**: Internal logic to validate and deduct materials during production or sales processes.
 
 ### ✅ Non-Functional Requirements (RNFs)
 - **Security**: Internal database IDs are hidden from the API layer using `@JsonIgnore`. Database credentials are kept in a protected `.env` file.
 - **Data Integrity**: Robust handling of duplicate codes and constraint violations.
+- **Payload Synchronization**: Strict DTO mapping between React and Quarkus to ensure type safety (Double/BigDecimal).
 - **Language**: Full English implementation for code, schemas, and documentation.
 
 ---
@@ -54,8 +56,8 @@ High-performance Java backend focused on data integrity and business logic.
 
 1. **Business Code Identification**: The API uses unique strings (e.g., `code: "PRD-001"`) for all `GET`, `PUT`, and `DELETE` operations.
 2. **Global Error Mapping**: A specialized `RestExceptionMapper` intercepts `ConstraintViolationException` to return clean `409 Conflict` messages.
-3. **Production Suggestion Engine**: Logic that sorts products by price (**Highest First**), validates availability, and calculates max volume.
-4. **JSON Optimization**: Prevents circular references in the `ProductComposition` model.
+3. **Production Suggestion Engine**: Logic that sorts products by price (**Highest First**), validates availability across all materials in the composition, and calculates max volume.
+4. **JSON Optimization**: Prevents circular references in the `ProductComposition` model while maintaining bidirectional visibility where needed.
 
 ---
 
