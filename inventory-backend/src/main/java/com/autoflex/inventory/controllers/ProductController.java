@@ -115,8 +115,7 @@ public class ProductController {
         }
     }
 
-    // AQUI ESTÁ A CLASSE QUE ESTAVA DANDO ERRO
-    @Schema(name = "ProductRequest")
+    @Schema(name = "Product Request")
     public static class ProductRequest {
         @Schema(required = true, examples = {"PRD-001"})
         public String code;

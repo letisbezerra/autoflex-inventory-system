@@ -7,22 +7,28 @@ import org.hibernate.exception.ConstraintViolationException;
 import java.util.Map;
 
 @Provider
-public class RestExceptionMapper implements ExceptionMapper<Exception> {
+public class RestExceptionMapper implements ExceptionMapper<Throwable> {
 
     @Override
-    public Response toResponse(Exception exception) {
-        // Se o erro for de duplicidade (Unique Constraint) ou campos nulos
-        if (exception.getCause() instanceof ConstraintViolationException || 
-            exception.getMessage().contains("ConstraintViolationException")) {
-            
+    public Response toResponse(Throwable exception) {
+        if (isConstraintViolation(exception)) {
             return Response.status(Response.Status.CONFLICT)
-                .entity(Map.of("error", "Code or Name already exists, or a required field is missing."))
+                .entity(Map.of("error", "Integrity violation: This code or name is already in use."))
                 .build();
         }
 
-        // Erro genérico para outros casos
         return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-            .entity(Map.of("error", "An internal error occurred: " + exception.getMessage()))
+            .entity(Map.of("error", "Server Error: " + exception.getLocalizedMessage()))
             .build();
+    }
+
+    private boolean isConstraintViolation(Throwable e) {
+        while (e != null) {
+            if (e instanceof ConstraintViolationException) {
+                return true;
+            }
+            e = e.getCause();
+        }
+        return false;
     }
 }

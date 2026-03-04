@@ -81,7 +81,7 @@ public class RawMaterialController {
         return Response.noContent().build();
     }
 
-    @Schema(name = "RawMaterialRequest")
+    @Schema(name = "Raw MaterialRequest")
     public static class RawMaterialRequest {
         @Schema(required = true, examples = {"RM-001"})
         public String code;

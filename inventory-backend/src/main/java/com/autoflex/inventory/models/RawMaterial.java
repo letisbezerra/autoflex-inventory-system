@@ -9,7 +9,7 @@ import java.util.List;
 public class RawMaterial extends PanacheEntityBase {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore 
     public Long id;
 
